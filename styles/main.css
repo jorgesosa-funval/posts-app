@@ -1,0 +1,8 @@
+textarea{
+    resize: none ;
+    height: 14rem;
+}
+
+.modal-content{
+    max-width: 420px;
+}
