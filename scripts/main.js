@@ -1,8 +1,15 @@
 const modal = document.querySelector('#modal')
+const edit_modal = document.querySelector('#edit_modal')
+
 const add = document.querySelector('#add')
+
 const btnClose = document.querySelector('#close')
+const btnCancel = document.querySelector('#edit_post_form button[type="button"]')
+
 const posts_list = document.querySelector('#posts_list')
 const post_form = document.querySelector('#post_form')
+const edit_post_form = document.querySelector('#edit_post_form')
+
 let postToEdit = {}
 const posts = [
     {
@@ -30,7 +37,9 @@ function toggleModal() {
          modal.classList.add('d-none')
       } */
 }
-
+function toggleEditModal() {
+    edit_modal.classList.toggle('d-none')
+}
 function loadPosts() {
     posts_list.innerHTML = ""
     for (let i = 0; i < posts.length; i++) {
@@ -67,7 +76,7 @@ function newPost(event) {
     const content = formData.get('contenido')
     const fecha = getDate()
     const nuevo = {
-        id: posts[posts.length -1]?.id + 1 || 1,
+        id: posts[posts.length - 1]?.id + 1 || 1,
         titulo: titulo,
         fecha: fecha,
         content: content
@@ -94,7 +103,7 @@ function getDate() {
 function findIndex(id) {
     for (let i = 0; i < posts.length; i++) {
         const element = posts[i];
-        if(element.id === id){
+        if (element.id === id) {
             return i
         }
     }
@@ -103,43 +112,62 @@ function findIndex(id) {
 function findElement(id) {
     for (let i = 0; i < posts.length; i++) {
         const element = posts[i];
-        if(element.id === id){
+        if (element.id === id) {
             return element
         }
     }
 }
 
 function deletePost(id) {
-    
+
     let index = findIndex(id) // encontrar el la posicion del elemento a eliminar
-    posts.splice(index,1) // eliminar post del array untilizando splice
+    posts.splice(index, 1) // eliminar post del array untilizando splice
     loadPosts() // volver a cargar los post despues de elminar.
 }
 
-function buttonsAction(event){
+function buttonsAction(event) {
 
     let target = event.target // obtener etique sobre la que se hizo click
     let id = parseInt(target.closest('li').id)// id del post sobre el cual se hizo click
- 
-      if(target.id === 'delete'){ // validar si se hizo click sobre el boton delete
-          deletePost(id) // llamar a la function de eliminar el post
-      }else if(target.id === 'edit'){ // validar si se hizo click sobre el boton edit
-          editPost(id) // llamar a la function de editar el post
-      }
+
+    if (target.id === 'delete') { // validar si se hizo click sobre el boton delete
+        deletePost(id) // llamar a la function de eliminar el post
+    } else if (target.id === 'edit') { // validar si se hizo click sobre el boton edit
+        editPost(id) // llamar a la function de editar el post
+    }
 
 }
 
 function editPost(id) {
     postToEdit = findElement(id)
-    post_form.elements.titulo.value = postToEdit.titulo
-    post_form.elements.contenido.value = postToEdit.content
-    toggleModal()
+    edit_post_form.elements.titulo.value = postToEdit.titulo
+    edit_post_form.elements.contenido.value = postToEdit.content
+    toggleEditModal()
 }
 
+function cancelEdition() {
+    edit_post_form.reset()
+    postToEdit = {}
+    toggleEditModal()
+}
+
+function saveEdition(event) {
+    event.preventDefault()
+    const formData = new FormData(edit_post_form)
+
+    postToEdit.content = formData.get('contenido')
+    postToEdit.titulo = formData.get('titulo')
+
+    loadPosts()
+    edit_post_form.reset()
+    toggleEditModal()
+    postToEdit = {}
+
+}
 add.addEventListener('click', toggleModal)
 btnClose.addEventListener('click', toggleModal)
 post_form.addEventListener('submit', newPost)
 posts_list.addEventListener('click', buttonsAction)
-
-
-loadPosts()
+btnCancel.addEventListener('click', cancelEdition)
+edit_post_form.addEventListener('submit', saveEdition)
+l 
